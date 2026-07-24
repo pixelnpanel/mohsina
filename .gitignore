@@ -1,0 +1,8 @@
+# Source CV is kept local — it contains the home address and should not be
+# published to a public repository.
+CV Mohsina.docx
+*.docx
+
+# Local tooling / OS noise
+.claude/
+.DS_Store
