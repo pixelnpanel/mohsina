@@ -56,6 +56,65 @@ if ('IntersectionObserver' in window) {
   }, { rootMargin: '-45% 0px -50% 0px' });
 
   sections.forEach(section => spyObserver.observe(section));
+
+  // Staggered fade-up for grid items, timeline entries, publications, contact cards
+  const staggerGroups = document.querySelectorAll(
+    '.cards, .timeline, .pubs, .contact-grid'
+  );
+  staggerGroups.forEach(group => {
+    const items = [...group.children];
+    items.forEach(item => item.classList.add('reveal-item'));
+
+    const groupObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        items.forEach((item, i) => {
+          item.style.transitionDelay = (i * 80) + 'ms';
+          item.classList.add('visible');
+        });
+        obs.disconnect();
+      });
+    }, { threshold: 0.15 });
+
+    groupObserver.observe(group);
+  });
+
+  // Count-up for the hero stat numbers
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stats = document.querySelectorAll('.stat-num');
+
+  const runCount = (el) => {
+    const raw = el.textContent.trim();
+    const match = raw.match(/^(\d+(?:\.\d+)?)(.*)$/);
+    if (!match) return;
+    const target = parseFloat(match[1]);
+    const suffix = match[2];
+    const decimals = (match[1].split('.')[1] || '').length;
+    const duration = 1100;
+    const start = performance.now();
+
+    const tick = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(decimals) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = target.toFixed(decimals) + suffix;
+    };
+    requestAnimationFrame(tick);
+  };
+
+  if (reduceMotion) {
+    // leave numbers as authored
+  } else {
+    const statObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        runCount(entry.target);
+        obs.unobserve(entry.target);
+      });
+    }, { threshold: 0.6 });
+    stats.forEach(s => statObserver.observe(s));
+  }
 }
 
 // Footer year
