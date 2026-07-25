@@ -177,10 +177,10 @@ ul, ol { margin: 0; padding: 0; }
   animation: float 6s ease-in-out infinite;
 }
 .hero-photo::before {
-  content: ""; position: absolute; inset: -12px; border-radius: 50%; z-index: 0;
+  content: ""; position: absolute; inset: -7px; border-radius: 50%; z-index: 0;
   background: conic-gradient(from 0deg, var(--accent), var(--accent-light), var(--plum-700), var(--accent));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 12px), #000 calc(100% - 12px));
-          mask: radial-gradient(farthest-side, transparent calc(100% - 12px), #000 calc(100% - 12px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 7px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 7px));
   animation: spin 9s linear infinite;
 }
 .hero-photo-img,
@@ -410,7 +410,14 @@ ul, ol { margin: 0; padding: 0; }
 
 /* ===== Responsive ===== */
 @media (max-width: 940px) {
-  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 34px; }
+  /* On narrow screens: photo first, then the name/intro, then the stats.
+     display:contents lets the photo and stats card flow into the hero grid
+     so they can be ordered independently of the text block. */
+  .hero-aside { display: contents; }
+  .hero-photo { order: -1; margin-inline: auto; }
+  .hero-text { order: 0; }
+  .hero-card { order: 1; }
   .about-grid { grid-template-columns: 1fr; gap: 24px; }
   .tl-item { grid-template-columns: 1fr; gap: 10px; }
 }
